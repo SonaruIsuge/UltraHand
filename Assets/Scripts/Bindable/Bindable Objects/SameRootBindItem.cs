@@ -127,6 +127,7 @@ namespace Bind
                 if(item.Rb) Destroy(item.Rb);
             }
             
+            item.PickUp();
             EventManager.RaiseEvent<OnBindItem>(new OnBindItem(this, other));
         }
 
