@@ -17,6 +17,7 @@ namespace Player
         public float PlayerCloseRange;
         public float PlayerFarRange;
         public float ItemMoveSpeed;
+        public float ItemRotateAngle;
         
         [Header("Bind")]
         // Maximum distance to detect other bindable item

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Player
@@ -15,11 +16,12 @@ namespace Player
         public bool CancelChoose => input.GamePlay.CancelChoose.WasPressedThisFrame();
         public bool Unbind => input.GamePlay.Unbind.WasPressedThisFrame();
         public float AdjustDistance { get; private set; }
-        public Vector2 AdjustRotation { get; private set; }
+        public Vector2 AdjustRotation => input.GamePlay.AdjustRotation.WasPerformedThisFrame() ? rotateDir : Vector2.zero;
+        
         
         private Input input;
 
-        private bool pressUltraHand;
+        private Vector2 rotateDir;
 
 
         public PlayerInput()
@@ -45,6 +47,8 @@ namespace Player
             input.GamePlay.Run.canceled += OnRunCanceled;
             input.GamePlay.AdjustDistance.performed += OnAdjustDistancePerformed;
             input.GamePlay.AdjustDistance.canceled += OnAdjustDistanceCanceled;
+            input.GamePlay.AdjustRotation.performed += OnAdjustRotationPerformed;
+            input.GamePlay.AdjustRotation.canceled += OnAdjustRotationCanceled;
         }
 
         public void UnregisterInput()
@@ -59,6 +63,8 @@ namespace Player
             input.GamePlay.Run.canceled -= OnRunCanceled;
             input.GamePlay.AdjustDistance.performed -= OnAdjustDistancePerformed;
             input.GamePlay.AdjustDistance.canceled -= OnAdjustDistanceCanceled;
+            input.GamePlay.AdjustRotation.performed -= OnAdjustRotationPerformed;
+            input.GamePlay.AdjustRotation.canceled -= OnAdjustRotationCanceled;
         }
 
 
@@ -115,12 +121,16 @@ namespace Player
 
         private void OnAdjustRotationPerformed(InputAction.CallbackContext ctx)
         {
+            var value = ctx.ReadValue<Vector2>();
+            if (value.x != 0) value.x = Mathf.Sign(value.x);
+            if (value.y != 0) value.y = Mathf.Sign(value.y);
             
+            rotateDir = value;
         }
 
         private void OnAdjustRotationCanceled(InputAction.CallbackContext ctx)
         {
-            
+            rotateDir = Vector2.zero;
         }
     }
 }

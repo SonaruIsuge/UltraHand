@@ -21,8 +21,9 @@ namespace Player
         // Record the position and rotation related value when selected
         public Vector3 PlayerHitPointVec { get; set; }
         public Vector3 HitPointCenterDrift { get; set; }
-        public Quaternion OffsetPlayerRotate { get; set; }
         public Vector3 SelectedScreenPos { get; set; }
+        public Quaternion OffsetPlayerRotate { get; set; }
+        public Quaternion SelectedItemRotate { get; set; }
         public Quaternion PlayerRelateRotation { get; set; }
     }
 }

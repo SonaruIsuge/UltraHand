@@ -133,21 +133,33 @@ namespace Player
             props.SelectedScreenPos = playerCam.WorldToScreenPoint(itemTrans.position);
             
             props.OffsetPlayerRotate = Quaternion.Inverse(PlayerTrans.rotation);
+            props.SelectedItemRotate = itemTrans.rotation;
             props.PlayerRelateRotation = props.OffsetPlayerRotate * itemTrans.rotation;
         }
         
         
         private void UpdateMove(float moveInput, Vector2 rotateInput)
         {
+            // input affect position
             var unitVec = props.PlayerHitPointVec.normalized;
             var distance = props.PlayerHitPointVec.magnitude;
             distance = Mathf.Clamp(distance + moveInput * attr.ItemMoveSpeed * Time.deltaTime, attr.PlayerCloseRange,
                 attr.PlayerFarRange);
             props.PlayerHitPointVec = unitVec * distance;
+
+            // input affect rotation
+            if (rotateInput.x != 0)
+                props.SelectedItemRotate = Quaternion.Euler(0, attr.ItemRotateAngle * -rotateInput.x, 0) * props.SelectedItemRotate;
             
+            if (rotateInput.y != 0)
+                props.SelectedItemRotate = Quaternion.AngleAxis(attr.ItemRotateAngle * rotateInput.y, PlayerTrans.right) * props.SelectedItemRotate;
+            
+            // calculate current position and rotation of item
             var pos = PlayerTrans.position + (PlayerTrans.rotation * props.OffsetPlayerRotate) * (props.PlayerHitPointVec + props.HitPointCenterDrift);
             pos.y = playerCam.ScreenToWorldPoint(props.SelectedScreenPos).y;
-            var rot = PlayerTrans.rotation * props.PlayerRelateRotation;
+            
+            // player current rotation * inverse player rotation * item rotation * (inverse item rotation * world rotation) * item rotation
+            var rot = PlayerTrans.rotation * props.OffsetPlayerRotate * props.SelectedItemRotate;
 
             props.SelectItem.UpdateMove(pos, rot);
         }
